@@ -1,17 +1,17 @@
 #!/usr/bin/perl
 # file name: ''cstermin.pl''
 #  project: cstermin
-# function: small scheduler in the style of how Cross Secretary
+# function: Small scheduler in the style of how Cross Secretary
 #           for XP once worked
 #
 #      created: 27.04.2k4
-#  last change: $Date: 2006/11/05 15:28:51 $
-#      Version: $Name:  $
-# Copyright (C) 2004,2006 Robert Lange <sd2k9@sethdepot.org>
+#  last change: See git history
+#      Version: See git tag
+# Copyright (C) 2004,2006,2018 Robert Lange <sd2k9@sethdepot.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
-# version 2 as published by the Free Software Foundation.
+# version 3 as published by the Free Software Foundation.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -670,7 +670,10 @@ sub versionstring () {
     }
 
     $ver . "\n"
-      . 'Copyright (C) 2004,2006 Robert Lange <sd2k9@sethdepot.org>';
+      . 'Copyright (C) 2004,2006,2018 Robert Lange <sd2k9@sethdepot.org>' . "\n"
+      . 'This program is free software; you can redistribute it and/or' . "\n"
+      . 'modify it under the terms of the GNU General Public License'   . "\n"
+      . 'version 3 as published by the Free Software Foundation.';
 }
 
 # print error messages to STDERR and stores them for later Gtk2 Display
