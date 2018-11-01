@@ -1,6 +1,9 @@
 			   cstermin History
 			   ================
 
+Version devel
+   - Under development in Git
+
 Version 0.03
    - Console Output is done now in UTF-8
    - Added Version parameter to command line

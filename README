@@ -1,5 +1,5 @@
-                                cstermin.pl 0.03
-                                ****************
+cstermin
+========
 
 Contents
 ********
@@ -59,7 +59,7 @@ GPL
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
-version 2 as published by the Free Software Foundation.
+version 3 as published by the Free Software Foundation.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -78,9 +78,10 @@ Requirements
 First of all perl itself is needed, but also some packages
 from CPAN.
 The CPAN-Modules can be found at http://search.cpan.org
+or probably in your distribution's package manager.
 
-perl 5, tested with version 5.8.2, 5.8.8
-CPAN Time::ParseDate from Time-modules, tested with version 2003.1126
+- perl 5, tested with version 5.8.2, 5.8.8
+- CPAN Time::ParseDate from Time-modules, tested with version 2003.1126
 
 If you want a nice graphical window for displaying, you also need
 the following:
@@ -121,10 +122,10 @@ it was started already today and exits if it is the case.
 Then the appointments are parsed and depending on the given lead time
 they are selected or hold back. For displayed items cstermin knows three
 different types:
-today  - the appointment is defined for today (marked TODAY)
-passed - the appointment date passed already, but cstermin was not
-         called at this day    (marked by PASSED and date of occurrence)
-normal - all other appointments (marked by date of occurrence)
+- Today  - the appointment is defined for today (marked TODAY)
+- Passed - the appointment date passed already, but cstermin was not
+           called at this day    (marked by PASSED and date of occurrence)
+- Normal - all other appointments (marked by date of occurrence)
 
 Depending on the output chosen, the selected appointments will be
 printed on the screen and/or displayed in a graphical window.
@@ -169,7 +170,7 @@ Options: Output-Console yes
 See section "Configuration" for all possibilities to set and unset them.
 
 
-Attention!
+*Attention!*
 For storing its calling time, cstermin modifies the config file by
 itself (unless told otherwise). In the write-back process all Options
 are moved to the beginning of the file, sorted by name.
@@ -183,17 +184,20 @@ Appointment Definition
 
 10.05.2004|visit Tom|J|5
 22.10.****|Birthday Lisa, age [1990]|N|10
-15.01.2006|Go to world cup in Germany|N|3
+15.01.2006|Go to world cup in Germany|J|3
+15.**.****|Do something nice each month|N|3
 
 Every entry consists of 4 fields, separated by a vertical slash.
 The meaning is:
 date|text|delete|lead
 
 date - Date of the appointment
-     This field is further subdivided into day, month and year,
-     separated by dots. The format is DD.MM.YYYY.
-     A special form replaces the year with asterisks (*, **, *** or
-     **** are valid), which means an annual appointment.
+    This field is further subdivided into day, month and year,
+    separated by dots. The format is DD.MM.YYYY.
+    A special form replaces the year with asterisks (*, **, *** or
+    **** are valid), which means an annual appointment.
+    Replacing the month with asterisks (* or  **),
+    specifies a monthly appointment.
 
 text - Description of the appointment
      This text will be displayed.
@@ -217,7 +221,7 @@ lead - Advance time in days for activating display
 Command Line Options
 ********************
 
-The command line options override the default settings and 
+The command line options override the default settings and
 the configuration file.
 
 
@@ -300,7 +304,7 @@ Representation of the options
 Meaning of the columns
         Name - Name of the option
      Default - Default Value
- Config File - option_name in the config file 
+ Config File - option_name in the config file
 Command Line - Name of the command line option
 
 
@@ -369,19 +373,14 @@ Non-Critical errors (i.e. program continues)
 
 Author
 ******
-
 Robert Lange
-E-Mail: robert.lange@s1999.tu-chemnitz.de
+https://sethdepot.org/site/RoLa.html
 
-If you have any questions, just send me a mail.
+If you have any questions, just write me or create an issue (see below).
 
-
-
-Project Page
-************
-
-cstermin is hosted by sourceforge, where you can find
-the newest version.
-
-   Home Page: http://cstermin.sourceforge.net/
-Project Page: http://sourceforge.net/projects/cstermin/
+Web Links
+*********
+- Repository
+  https://github.com/sd2k9/cstermin
+- Issue tracker
+  https://github.com/sd2k9/cstermin/issues
