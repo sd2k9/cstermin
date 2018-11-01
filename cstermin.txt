@@ -1,0 +1,387 @@
+                                cstermin.pl 0.03
+                                ****************
+
+Contents
+********
+
+Overview
+GPL
+Requirements
+Installation
+Function
+Configuration File
+Appointment Definition
+Command Line Options
+Configuration
+Graphical Output
+Exit Codes
+Author
+Project Page
+
+
+
+Overview
+********
+
+cstermin is a small scheduler for keeping track of recurring
+events like birthdays or one-time appointments.
+The appointments are read from an configuration file created
+by the user and displayed on the console or with the help of
+a Gtk2 widget.
+
+You can configure how long in advance you want to be informed,
+whether the entry should be deleted after passing, you want to
+be messaged every startup or only once a day and other things.
+
+It is intended to be put into the autostart mechanism of your
+window manager when you usually start your machine at least
+once a day. Otherwise a cron job should do the job.
+
+The idea of cstermin and the structure of the configuration file
+is based on the program CrossSecretary
+(http://userpage.fu-berlin.de/~akb/busse/cs.htm,
+German), which is an multifunctional mail filter for the
+once famous CrossPoint mail program. In the case
+of CrossSecretary, the active appointments were displayed in
+form of a pseudo-mail inside CrossPoint.
+cstermin lacks the mailing ability, but instead offers
+a nice graphical window. :-)
+
+To sum up, cstermin follows the philosophy of "a small tool
+to solve one task" and tries to provide a simple tool for
+keeping track of all the birthdays and things you want to
+remember for next month (and always end up forgetting).
+
+
+
+GPL
+***
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+version 2 as published by the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+
+
+Requirements
+************
+
+First of all perl itself is needed, but also some packages
+from CPAN.
+The CPAN-Modules can be found at http://search.cpan.org
+
+perl 5, tested with version 5.8.2, 5.8.8
+CPAN Time::ParseDate from Time-modules, tested with version 2003.1126
+
+If you want a nice graphical window for displaying, you also need
+the following:
+CPAN Gtk2, tested with version 1.042, 1.121
+
+cstermin is likely to work also with other versions than the
+one mentioned here. When you encounter problems just
+drop me a note.
+
+
+
+Installation
+************
+
+Just copy (or link) the executable cstermin.pl into your path or
+any place you like. If you want to see the program icon also move
+cstermin.png into the same directory.
+
+Finally create a configuration file at $HOME/.csterminrc and you're done.
+You can use the supplied file cstermin.conf.template as a reference.
+
+
+Function
+********
+
+The operation of cstermin is quite simple.
+Upon startup it first reads the configuration file which includes
+the appointments and further settings.
+If not overridden on the command line the default config file
+is "~/.csterminrc".
+
+The settings from the configuration file can also be overridden
+by the command line.
+
+If not told differently, first of all cstermin checks whether
+it was started already today and exits if it is the case.
+
+Then the appointments are parsed and depending on the given lead time
+they are selected or hold back. For displayed items cstermin knows three
+different types:
+today  - the appointment is defined for today (marked TODAY)
+passed - the appointment date passed already, but cstermin was not
+         called at this day    (marked by PASSED and date of occurrence)
+normal - all other appointments (marked by date of occurrence)
+
+Depending on the output chosen, the selected appointments will be
+printed on the screen and/or displayed in a graphical window.
+To match the character encoding of the configuration file and
+the GTK2 window the console output is also done in UTF-8.
+
+
+Configuration File
+******************
+
+This is the main point of interaction with cstermin.
+The expected character coding is UTF-8.
+
+Every line forms a single data unit whereby three types are
+distinguished.
+
+Ignore
+------
+
+Empty lines and lines starting with an hash (#) character are ignored
+in the processing.
+
+Appointment
+-----------
+
+The main type of data. This is what cstermin is all about.
+They look the following way:
+10.05.2004|visit Tom|J|5
+22.10.****|Birthday Lisa, age [1990]|N|10
+15.01.2006|go to world cup in Germany|N|3
+
+The structure is explained in the following section
+"Appointment Definition".
+
+Settings
+--------
+
+Settings look like this and change the behavior of cstermin.
+Options: Debug
+Options: Output-Console yes
+
+See section "Configuration" for all possibilities to set and unset them.
+
+
+Attention!
+For storing its calling time, cstermin modifies the config file by
+itself (unless told otherwise). In the write-back process all Options
+are moved to the beginning of the file, sorted by name.
+Therefore it is advisable that you refrain from adding comments about
+options, as they will be separated from their associated Option anyway.
+
+
+
+Appointment Definition
+**********************
+
+10.05.2004|visit Tom|J|5
+22.10.****|Birthday Lisa, age [1990]|N|10
+15.01.2006|Go to world cup in Germany|N|3
+
+Every entry consists of 4 fields, separated by a vertical slash.
+The meaning is:
+date|text|delete|lead
+
+date - Date of the appointment
+     This field is further subdivided into day, month and year,
+     separated by dots. The format is DD.MM.YYYY.
+     A special form replaces the year with asterisks (*, **, *** or
+     **** are valid), which means an annual appointment.
+
+text - Description of the appointment
+     This text will be displayed.
+     You can embed a tag of the form "[yyyy]", which will be replaced
+     by the year difference to now. Very handy when you cannot remember
+     neither birthday nor age of the person in question.
+
+delete - Delete or keep
+       Either Y, J (Yes) or N (No). If yes, the entry will be deleted
+       when it's time has passed. No keeps it. Usually you would set
+       'Y' for one-timers and 'N' for annual events.
+
+lead - Advance time in days for activating display
+     This one or two digit field gives the number of days you want to
+     be informed in advance of your appointment. When this time span is
+     reached, the appointment will be displayed until it passes by.
+     '0' means only display on the given date.
+
+
+
+Command Line Options
+********************
+
+The command line options override the default settings and 
+the configuration file.
+
+
+--help, -h, -?
+	Prints a small help screen
+--version, -V
+        Program version
+--config <file>, -c <file>
+	 Use <file> as configuration file
+	 If not set, the default is ~/.csterminrc
+
+Command line options are case insensitive.
+
+For more information and the options concerning the behavior
+of cstermin, see the following section "Configuration".
+
+
+
+Configuration
+*************
+
+cstermin uses three ways to determine the value of certain
+options. First there are defaults, then it reads the configuration
+file and last of all the command line options are considered.
+
+Settings in the Configuration File
+----------------------------------
+
+e.g.: "Options: Output-Console yes"
+
+The structure is:
+reserved_word option_name value
+
+reserved_word:
+The reserved word is always "Options:" (technically the
+space after it also belongs to the reserved word).
+
+option_name:
+Just the name, and nothing more. The option name is case sensitive.
+
+value:
+All options explained here are binary options. This means if there
+is no value given, their meaning is "set".
+If you append "0", "false" or "no", then it means unset.
+All other words again mean "set".
+Summary: "0", "false", "no": unset
+	    everything else: set
+The value is case insensitive.
+
+Command Line Options
+--------------------
+
+Besides the command line options mentioned in the section "Command
+Line Options", there are also toggle options.
+Most of the options have one long form and one short form. The long
+form, which is preceded by two hyphen, can be shortened until
+uniqueness.
+
+If the option is issued, it means "set". The long form of options can be
+negated by prepending "no" or "no-", then the option means "unset".
+For example "--debug" means enable debug, but "--no-debug" means
+disable debug.
+
+The options are case insensitive.
+
+Known Options
+-------------
+
+The following options are used in cstermin:
+
+Output-Console: Print the appointments to standard output
+   Output-Gtk2: Show the appointments with the help of a Gtk2 window
+     Force-Run: Run upon every call, not only once a day
+        Modify: Allow modification of the config file by cstermin
+         Debug: Print debug messages
+
+Representation of the options
+-----------------------------
+
+Meaning of the columns
+        Name - Name of the option
+     Default - Default Value
+ Config File - option_name in the config file 
+Command Line - Name of the command line option
+
+
+Name	       |Default|Config File   |Command Line
+---------------+-------+--------------+---------------------------
+Output-Console |set    |Output-Console|--output-console, --console
+   Output-Gtk2 |unset  |Output-Gtk2   |--output-gtk2, --gtk2
+     Force-Run |unset  |Force-Run     |--force-run, --force, --run
+        Modify |set    |Modify        |--modify, -m
+        Debug: |unset  |Debug         |--debug, -d
+
+
+Internal used Options in the Configuration File
+-----------------------------------------------
+
+This options are modified by cstermin itself.
+
+Last-Run: The date cstermin was last invoked
+	  format is DD.MM.YYYY
+
+
+Hidden Options inside cstermin.pl
+---------------------------------
+
+At the beginning of the cstermin executable file you find a marked
+section, where you can change various options which are not
+controlled by the command line.
+
+These settings include:
+- Text prefix for passed and today's appointments
+- Hightlighting style for passed and today's appointments
+- Output date format
+
+
+
+Graphical Output
+****************
+
+If enabled, the appointments are displayed in a graphical window.
+
+Not much to say about it, as there are only two buttons.
+The "OK" Button closes the window and continues the program run.
+The "Later" Button closes the window, but does not modifies
+the configuration file. The apparent effect is that all appointments
+will be displayed again this day on the following run, even when
+cstermin is instructed not to do so.
+
+
+
+Exit Codes
+**********
+
+No Error
+
+0: Okay
+
+Critical errors (i.e. program terminates at once)
+
+2: Error parsing the command line
+
+Non-Critical errors (i.e. program continues)
+
+100: Error in config file
+
+
+
+Author
+******
+
+Robert Lange
+E-Mail: robert.lange@s1999.tu-chemnitz.de
+
+If you have any questions, just send me a mail.
+
+
+
+Project Page
+************
+
+cstermin is hosted by sourceforge, where you can find
+the newest version.
+
+   Home Page: http://cstermin.sourceforge.net/
+Project Page: http://sourceforge.net/projects/cstermin/

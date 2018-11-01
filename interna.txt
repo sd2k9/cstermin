@@ -1,0 +1,19 @@
+The information in this file deal with some internal structures of the
+cstermin script and are most likely only of interest to people,
+who want to modify the program.
+Warning: This is more a aid to memory for myself than a decent
+         documentation.
+
+
+structure of the termin array:
+  line: the line read from the config file
+  remove: defined if this line is to be removed upon write-back
+
+structure of the hash storing one parsed line(e.g. for sub format_set):
+  day:   appointment day
+  month: appointment month
+  year:  appointment year (substituted for annual events)
+  text:  appointment text
+  mod:   modificator of the appointment line in the config file (Y/N)
+  adv: time advance
+

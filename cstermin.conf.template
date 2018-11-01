@@ -1,0 +1,44 @@
+# This is a template of the configuration file.
+# Copy it to your home directory under the name of ".csterminrc"
+# or use the option "-c <configfile>" to specify another file name.
+
+# First of all, you can define several options to control cstermin.
+# When you uncomment options, they will be moved to the beginning
+# of the file (call it a feature or lazyness of the programmer :-)
+#
+# The following options are binary options. When defining them
+# and writing "0", "false", or "no" as option text, then they are
+# disabled. Writing anything else (or nothing) means enabled.
+# The defaults are indicated.
+#
+# Debug Mode
+# Options: Debug No
+#
+# Print appointments in the console window
+# Options: Output-Console Yes
+#
+# Display appointments in a Gtk2 graphical window
+# Options: Output-Gtk2 No
+#
+# Run every program execution, not only once a day
+# Options: Force-Run No
+#
+# Allow the modification of this configuration file by cstermin
+# Options: Modify Yes
+#
+# This option should not be set manually, because it is used by cstermin to
+# determine when it was last started and will be added automatically.
+# Options: Last-Run DD.MM.YYYY
+
+# Now to the appointments themself. First some examples:
+# 10.05.2004|visit Tom|J|5
+# 22.10.****|Birthday Karl-Heinz, age [1990]|N|10
+# 15.01.2006|Go to world cup in Germany|N|3
+#
+# Meaning of the fields
+# date - Date of the appointment in format DD.MM.YYYY
+#        Star(s) for YYYY means annual event
+# text - Description of the appointment
+#        A tag of "[yyyy]" will be replaced by year(now)-yyyy
+# delete - Delete (Y) or Keep (N) this line after it passed
+# lead - Advance time in days for activating display

@@ -1,0 +1,21 @@
+			   cstermin History
+			   ================
+
+Version 0.03
+   - Console Output is done now in UTF-8
+   - Added Version parameter to command line
+   - Appointments are now sorted by date for display
+   - GTK2 Widget
+     - Added separators between passed, today's and future appointments
+     - Improved appointments alignment
+     - Text Highlighting of "PASSED" and "TODAY" Appointments
+     - Added Program Icon
+
+Version 0.02
+   - The character set of the config file is now UTF-8
+   - Error messages are also displayed in a GTK widget, if available
+   - It's now possible to copy text from the Gtk2 window
+
+
+Version 0.01
+   - Initial Release

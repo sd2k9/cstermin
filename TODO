@@ -1,0 +1,16 @@
+Program
+*******
+
+Misc:
+- keep order of Lines in the ConfigFile while writeback
+- allow configuration of date format in display and config file
+
+Gtk2-Widget:
+- think about how to let Gtk2 parse its standard arguments from the
+  command line without loading the whole Gtk2 always (even when
+  we don't want to use it)
+
+config file:
+- disable UTF8 for config file (and terminal output) on the command line
+- allow comments after lines
+- when invalid entry encountered, print line number
