@@ -77,6 +77,7 @@ use Time::ParseDate;  # Time-modules
 
 # *** furter settings needed by the program ***
 my $Prog_Name = "cstermin.pl";
+my $Prog_Version = 'devel';
 # Marker for Options in the config file
 my $Options_Prefix = "Options: ";
 # this also works as a docu of the available options
@@ -126,7 +127,7 @@ sub read_commandline();
 sub exit_cstermin($);
 # write the to-print entries to the console window
 sub output_console();
-# Return version string from CVS tag with copyright
+# Return version string with hard-coded version
 sub versionstring ();
 # displays the to-print entries with a Gtk2-Widget
 sub output_gtk2();
@@ -682,19 +683,7 @@ sub output_console() {
 # return version string from CVS tag with copyright
 sub versionstring () {
 
-    my $ver = ' $Name:  $ ';
-    $ver =~ s/Name//g;
-    $ver =~ s/[:\$]//g;
-    $ver =~ s/\s+//g;
-    $ver =~ s/^v//g;
-    $ver =~ s/_/\./g;
-    $ver =~ s/^rev//;
-    $ver =~ s/^\.//;
-    if ($ver eq '') {
-	$ver = "devel";
-    }
-
-    $ver . "\n"
+    $Prog_Version . "\n"
       . 'Copyright (C) 2004,2006,2018 Robert Lange <sd2k9@sethdepot.org>' . "\n"
       . 'This program is free software; you can redistribute it and/or' . "\n"
       . 'modify it under the terms of the GNU General Public License'   . "\n"
