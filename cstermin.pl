@@ -429,9 +429,8 @@ sub read_commandline() {
   }
 
 
-# ZUM AUSGEBEN DES OPTs
+# Debug Dump
 #  use Data::Dumper;
-# Das verwenden: my %commandline_options;  # Options from the command line
 #  print Dumper(%commandline_options);
 
 }
@@ -470,6 +469,7 @@ sub process_termine() {
                     # entry is array (when there are more than one
                     # appointment this date) of arrays
                       # entry 0 is %set, entry 1 is %output_flags
+  my $curyear = 1900 + (localtime($now))[5];  # Current year, for date parsing
 
   # *** Parsing Loop: Parse all entries
   foreach (@termine) {
@@ -484,9 +484,9 @@ sub process_termine() {
 
     next while $line =~ /^\s*#/; # filter out comments
     next while $line =~ /^\s*$/; # and empty lines
-    # format:dd.mm.yy/*|what|flag|time
+    # format:dd.mm/*.yy/*|what|flag|time
     if ($line !~ 
-        m!^\s*(\d\d)\.(\d\d).(\d\d\d\d|\*{1,4})\|\s*(.*)\s*\|([JYN])\|(\d{1,2})\s*$!) {
+        m!^\s*(\d\d)\.(\d\d|\*{1,2}).(\d\d\d\d|\*{1,4})\|\s*(.*)\s*\|([JYN])\|(\d{1,2})\s*$!) {
       # Match failed
       print_error "Error in the following line from the config file:\n";
       print_error "$line\n";
@@ -499,8 +499,6 @@ sub process_termine() {
     #    print "$1\n$2\n$3\n$4\n$5\n$6\n";
     #    print "ENDMATCH\n";
     # save in set
-    $set{'day'} = $1;
-    $set{'month'} = $2;
     $set{'text'} = $4;
     if ($5 eq "J") {
       # correct mode "Ja" to "Yes"
@@ -509,19 +507,46 @@ sub process_termine() {
       $set{'mod'} = $5;        # mode
     }
     $set{'adv'} = $6;        # time advance
+    # day is just plain day
+    $set{'day'} = $1;
+    # backup year match, because next match will overwrite it
+    $set{'year'} = $3;
+    # month need special handling
+    if ( $2 =~ /\*/ ) {
+      # for always entries adjust the month to current month
+      $set{'month'} = (localtime($now))[4];
+      # check if we maybe already passed this date, then increment the month
+      # use current year, because year parsing is done next
+      # Handle also wrap around (12. month - counted from 0) next
+      # we assume that a difference of 10 days means increment
+      if ( $now >
+	   (parsedate("$curyear/$set{'month'}/$set{'day'}") + 10*24*60*60) ) {
+	++$set{'month'};
+      }
+    } else {
+	$set{'month'} = $2;
+    }
     # year need special handling
-    if ( $3 =~ /\*/ ) {
+    if ( $set{'year'} =~ /\*/ ) {
       # for always entries adjust the date
-      $set{'year'} = 1900 + (localtime($now))[5];
+      $set{'year'} = $curyear;
+      # In case of monthly+annual event with month wrap around (12. month) correct this
+      if ($set{'month'} == 12) {
+	  ++$set{'year'};
+	$set{'month'} = 1;
+      } elsif ($set{'month'} > 12) {
+	  # Something went wrong here
+	  die "Month became larger than 13 - I guess you hit an bug\n";
+      }
       # check if we maybe already passed this date, then increment the year
       # we assume that a difference of 150 days means increment
       if ( $now >
 	   (parsedate("$set{'year'}/$set{'month'}/$set{'day'}") + 150*24*60*60) ) {
 	++$set{'year'};
       }
-    } else {
-      $set{'year'} = $3;
-    }
+    } # else: Temporary match is final match
+    # Now finally format the (probably) numerical month as MM
+    $set{'month'} = sprintf("%02d", $set{'month'});
 
     # *** now check, if we have to print out this entry
     $when = parsedate("$set{'year'}/$set{'month'}/$set{'day'} 23:59:59");
