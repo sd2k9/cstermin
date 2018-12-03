@@ -486,7 +486,7 @@ sub process_termine() {
     next while $line =~ /^\s*#/; # filter out comments
     next while $line =~ /^\s*$/; # and empty lines
     # format:dd.mm/*.yy/*|what|flag|time
-    if ($line !~ 
+    if ($line !~
         m!^\s*(\d\d)\.(\d\d|\*{1,2}).(\d\d\d\d|\*{1,4})\|\s*(.*)\s*\|([JYN])\|(\d{1,2})\s*$!) {
       # Match failed
       print_error "Error in the following line from the config file:\n";
@@ -515,10 +515,10 @@ sub process_termine() {
     # month need special handling
     if ( $2 =~ /\*/ ) {
       # for always entries adjust the month to current month
-      $set{'month'} = (localtime($now))[4];
+      $set{'month'} = (localtime($now))[4] + 1;
       # check if we maybe already passed this date, then increment the month
       # use current year, because year parsing is done next
-      # Handle also wrap around (12. month - counted from 0) next
+      # Handle also wrap around (13. month - counted from 1) next
       # we assume that a difference of 10 days means increment
       if ( $now >
 	   (parsedate("$curyear/$set{'month'}/$set{'day'}") + 10*24*60*60) ) {
@@ -532,10 +532,10 @@ sub process_termine() {
       # for always entries adjust the date
       $set{'year'} = $curyear;
       # In case of monthly+annual event with month wrap around (12. month) correct this
-      if ($set{'month'} == 12) {
+      if ($set{'month'} == 13) {
 	  ++$set{'year'};
 	$set{'month'} = 1;
-      } elsif ($set{'month'} > 12) {
+      } elsif ($set{'month'} > 13) {
 	  # Something went wrong here
 	  die "Month became larger than 13 - I guess you hit an bug\n";
       }
