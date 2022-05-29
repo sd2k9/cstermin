@@ -27,7 +27,7 @@ cstermin is a small scheduler for keeping track of recurring
 events like birthdays or one-time appointments.
 The appointments are read from an configuration file created
 by the user and displayed on the console or with the help of
-a Gtk2 widget.
+a Gtk widget.
 
 You can configure how long in advance you want to be informed,
 whether the entry should be deleted after passing, you want to
@@ -80,12 +80,13 @@ from CPAN.
 The CPAN-Modules can be found at http://search.cpan.org
 or probably in your distribution's package manager.
 
-- perl 5, tested with version 5.8.2, 5.8.8
-- CPAN Time::ParseDate from Time-modules, tested with version 2003.1126
+- perl 5, tested with version 5.8.2, 5.8.8, 5.32.1
+- CPAN Time::ParseDate from Time-modules, tested with version 2015.103
+  - Package libtime-parsedate-perl on Debian/Ubuntu
 
 If you want a nice graphical window for displaying, you also need
 the following:
-CPAN Gtk2, tested with version 1.042, 1.121
+CPAN Gtk3 (package libgtk3-perl on Debian/Ubuntu), tested with version 0.038
 
 cstermin is likely to work also with other versions than the
 one mentioned here. When you encounter problems just
@@ -130,7 +131,7 @@ different types:
 Depending on the output chosen, the selected appointments will be
 printed on the screen and/or displayed in a graphical window.
 To match the character encoding of the configuration file and
-the GTK2 window the console output is also done in UTF-8.
+the Gtk window the console output is also done in UTF-8.
 
 
 Configuration File
@@ -293,7 +294,7 @@ Known Options
 The following options are used in cstermin:
 
 Output-Console: Print the appointments to standard output
-   Output-Gtk2: Show the appointments with the help of a Gtk2 window
+   Output-Gtk:  Show the appointments with the help of a Gtk window
      Force-Run: Run upon every call, not only once a day
         Modify: Allow modification of the config file by cstermin
          Debug: Print debug messages
@@ -311,7 +312,7 @@ Command Line - Name of the command line option
 Name	       |Default|Config File   |Command Line
 ---------------+-------+--------------+---------------------------
 Output-Console |set    |Output-Console|--output-console, --console
-   Output-Gtk2 |unset  |Output-Gtk2   |--output-gtk2, --gtk2
+   Output-Gtk  |unset  |Output-Gtk    |--output-gtk, --gtk
      Force-Run |unset  |Force-Run     |--force-run, --force, --run
         Modify |set    |Modify        |--modify, -m
         Debug: |unset  |Debug         |--debug, -d
@@ -374,7 +375,6 @@ Non-Critical errors (i.e. program continues)
 Author
 ******
 Robert Lange
-https://sethdepot.org/site/RoLa.html
 
 If you have any questions, just write me or create an issue (see below).
 
