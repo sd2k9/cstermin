@@ -72,7 +72,7 @@ use FindBin;
 # CPAN packages
 use Time::ParseDate;  # Time-modules
 
-# Gtk2-Package is included after variable declaration
+# Gtk-Package is included after variable declaration
 
 
 # *** furter settings needed by the program ***
@@ -92,8 +92,8 @@ my %Options_Names = (
    Last_Run => "Last-Run",    # format: dd.mm.yyyy         A
    # Output the appointments to the console window
    'Output-Console' => 'Output-Console',  #  format: B
-   # Output the appointments with the help of a Gtk2 Widget
-   'Output-Gtk2' => 'Output-Gtk2',     #  format: B
+   # Output the appointments with the help of a Gtk Widget
+   'Output-Gtk' => 'Output-Gtk',     #  format: B
    # run in any case, even if we were called already this day
    'Force-Run' => 'Force-Run', #  format: B
    # allow modification of the config file
@@ -129,21 +129,21 @@ sub exit_cstermin($);
 sub output_console();
 # Return version string with hard-coded version
 sub versionstring ();
-# displays the to-print entries with a Gtk2-Widget
-sub output_gtk2();
-# format appointments and put into vbox for Gtk2-Widget as markup text label
+# displays the to-print entries with a Gtk-Widget
+sub output_gtk();
+# format appointments and put into vbox for Gtk-Widget as markup text label
 # 1.P: vbox object
 # 2.P: Array reference to Appointments
-sub output_gtk2_appointments($\@);
-# escape markup characters before applying pango markup in gtk2 label
+sub output_gtk_appointments($\@);
+# escape markup characters before applying pango markup in Gtk label
 # 1.P: Reference to Text which should be escaped
 sub markup_escape(\$);
 # displays the collected error messages in this run
-sub error_gtk2();
-# Attach cstermin icon to the handed over gtk2 window
+sub error_gtk();
+# Attach cstermin icon to the handed over Gtk window
 # 1.P: window object
-sub attach_gtk2_icon ($);
-# print error messages to STDERR and stores them for later Gtk2 Display
+sub attach_gtk_icon ($);
+# print error messages to STDERR and stores them for later Gtk Display
 sub print_error($);
 
 # *** global variables ***
@@ -161,13 +161,13 @@ my %configfile_options;   # Options from config file; write them back later
 my %commandline_options;  # Options from the command line
    # sub read_commandline sets the following values to 1 (enabled)
    # or 0 (disabled) when found:
-   # Force-Run, Modify, gtk2, Debug
+   # Force-Run, Modify, gtk, Debug
 my %options = (        # processed options for use in the program
                        # derived from defaults, Config-File and then command line
    # so we put only values here which can be overwritten and are not modified
    # Binary values share the name with their %Option_Names equivalent
    # Values:
-   # Output-Gtk2: true if enabled
+   # Output-Gtk: true if enabled
    # Output-Console: true if enabled
 	       'Output-Console' => 1,
    # Force-Run: true if we run independent of the Last-Run configfile item
@@ -178,10 +178,10 @@ my %options = (        # processed options for use in the program
 #	       ConfigFile => "termin.txt"                # for local testing
 	       ConfigFile => "$ENV{'HOME'}/.csterminrc"  # for usage
 );
-my $gtk2_available;      # true when the Gtk2-Package was loaded sucessfully
+my $gtk_available;      # true when the Gtk-Package was loaded sucessfully
 
-my $error_messages; # stores error messages, to show them before exit
-                    # by Gtk2 if possible
+my $error_messages = ""; # stores error messages, to show them before exit
+                         # by Gtk if possible
 
 # *** global constants ***
 my %exit_codes_meaning = (configerror => 100,
@@ -199,7 +199,7 @@ cstermin is a small scheduler for keeping track of recurring
 events, like birthdays or one-time appointments.
 The appointments are read from an configuration file created
 by the user and displayed on the console or with the help of
-a Gtk2 widget.
+a Gtk widget.
 
 You can configure how long in advance you want to be informed,
 if the entry should be deleted after passing, if you want to
@@ -220,7 +220,7 @@ USAGE
 
      Binary Options:
        --output-console, --console   Print appointments in console window
-       --output-gtk2, --gtk2         Show appointments in graphical window
+       --output-gtk, --gtk           Show appointments in graphical window
        --force-run, --force, --run   Print appointments every run, not
                                      only the first call a day
        --modify, -m                  Allow modification of configuration file
@@ -248,9 +248,9 @@ sub main() {
   binmode(STDOUT, ":utf8");
 
 
-  # *** Checking for Gtk2-Package
-  if (eval "use Gtk2; 1") {
-    $gtk2_available = 1;     # Gtk2 is principially available
+  # *** Checking for Gtk3-Package
+  if (eval "use Gtk3; 1") {
+    $gtk_available = 1;     # Gtk is principially available
     # 'declare' constants
     use constant TRUE  => 1;
     use constant FALSE => 0;
@@ -301,19 +301,19 @@ sub main() {
 
 
   # *** decide with output to use
-  # only if we have the Gtk2-package, check for the output
-  if ( $options{'Output-Gtk2'} and ! $gtk2_available) {
-    # Gtk2 requested but bindings failed to load
-    print_error "Configuration File requests Gtk2-Output, but " .
-      "Module Gtk2 failed to load!\n";
+  # only if we have the Gtk-package, check for the output
+  if ( $options{'Output-Gtk'} and ! $gtk_available) {
+    # Gtk requested but bindings failed to load
+    print_error "Configuration File requests Gtk-Output, but " .
+      "Module Gtk3 failed to load!\n";
     print_error "     Maybe not installed properly? Falling back to console.\n";
-    undef $options{'Output-Gtk2'};  # not
+    undef $options{'Output-Gtk'};  # not
     $options{'Output-Console'} = 1;  # not
   } else {
-    print "DEBUG: Gtk2-Output enabled\n" if $options{'Debug'};
+    print "DEBUG: Gtk-Output enabled\n" if $options{'Debug'};
   }
   # *** check if we have at least one output enabled
-  if (! ($options{'Output-Gtk2'} or $options{'Output-Console'}) ) {
+  if (! ($options{'Output-Gtk'} or $options{'Output-Console'}) ) {
     print "WARNING: No output method selected\n";
   }
 
@@ -323,8 +323,8 @@ sub main() {
 
   # *** output Termins
   output_console() if $options{'Output-Console'};
-  # if we use Gtk2, then create finally the form
-  output_gtk2() if $options{'Output-Gtk2'};
+  # if we use Gtk, then create finally the form
+  output_gtk() if $options{'Output-Gtk'};
 
   # *** write back
   write_back() if $options{'Modify'};
@@ -368,7 +368,7 @@ sub load_config() {
 sub set_configfile_options() {
 
   # *** settings
-  my @which_opts = qw/Force-Run Modify Debug Output-Console Output-Gtk2/;
+  my @which_opts = qw/Force-Run Modify Debug Output-Console Output-Gtk/;
                      # parse this settings
 
   # local vars
@@ -399,7 +399,7 @@ sub read_commandline() {
 			  'version|V' => \$ver,
 			  'Force-Run|run|force!',
 			  'Output-Console|console!',
-			  'Output-Gtk2|gtk2!',
+			  'Output-Gtk|gtk!',
 			  'Modify|m!',
 			  'Debug|d!',
 			  'config|c=s' => \$options{'ConfigFile'}
@@ -690,7 +690,7 @@ sub versionstring () {
       . 'version 3 as published by the Free Software Foundation.';
 }
 
-# print error messages to STDERR and stores them for later Gtk2 Display
+# print error messages to STDERR and stores them for later Gtk Display
 # 1.P: error message to print
 sub print_error($) {
   my $error = $_[0];
@@ -709,26 +709,26 @@ sub exit_cstermin($) {
 
   my $exit_code = $_[0];   # store exit code
 
-  # check if we have/can output error messages with Gtk2
-  error_gtk2() if $gtk2_available;
+  # check if we have/can output error messages with Gtk
+  error_gtk() if $gtk_available;
 
   # and now go away
   exit $exit_code;
 }
 
 
-# ******************************** Gtk2 ******************************
+# ******************************** Gtk ******************************
 
 # *** Declaration of Callbacks
-sub gtk2_response;
+sub gtk_response;
 
-# displays the to-print entries with a Gtk2-Widget
-sub output_gtk2() {
+# displays the to-print entries with a Gtk-Widget
+sub output_gtk() {
 
   # *** Variables
   my @apps;     # Appointments as local copy, for highlighting
 
-  #  print "DEBUG: Content to display with Gtk2:\n$output_content\n" if $options{'Debug'};
+  #  print "DEBUG: Content to display with Gtk3:\n$output_content\n" if $options{'Debug'};
 
   # do we have something to display?
   if ( @output_content_passed + @output_content_today + @output_content == 0 ) {
@@ -736,22 +736,22 @@ sub output_gtk2() {
     return;
   }
 
-  # Init Gkt2
-  Gtk2->init;
+  # Init Gkt
+  Gtk3->init;
 
   # *** Build Widget
-  # Next evolution step: Gtk2::Dialog
+  # Next evolution step: Gtk3::Dialog
   # Without Separator line, because I will add this by myself
-  my $dialog = Gtk2::Dialog->new('Appointment Days',
+  my $dialog = Gtk3::Dialog->new('Appointment Days',
 				 undef,
-				 ['destroy-with-parent', 'no-separator'],
+				 ['destroy-with-parent', 'use-header-bar'],
 				 '_Later' => 100,         # Later Button
 				 'gtk-ok' => 'none'      # OK Button
 				);
   $dialog->set_default_response('none');                    # OK is default
 
   # Try to load Window's icon
-  attach_gtk2_icon($dialog);
+  attach_gtk_icon($dialog);
 
   # Passed's Appointments: Highlight "Passed"
   @apps = @output_content_passed;
@@ -761,7 +761,8 @@ sub output_gtk2() {
     # just replace text by hightlighted version
     s|^$prefix_app_passed|<span $markup_app_passed>$prefix_app_passed</span>|;
   }
-  output_gtk2_appointments($dialog->vbox, @apps);
+  # Gtk2: output_gtk_appointments($dialog->vbox, @apps);
+  output_gtk_appointments($dialog->get_content_area(), @apps);
 
   # Today's Appointments: Highlight "Today"
   @apps = @output_content_today;
@@ -771,26 +772,28 @@ sub output_gtk2() {
     # just replace text by hightlighted version
     s|^$prefix_app_today|<span $markup_app_today>$prefix_app_today</span>|;
   }
-  output_gtk2_appointments($dialog->vbox, @apps);
+  # Gtk2: output_gtk_appointments($dialog->vbox, @apps);
+  output_gtk_appointments($dialog->get_content_area(), @apps);
 
   # Normal Appointments
   @apps = @output_content;
   foreach (@apps) {     markup_escape($_);    }   # mask all markup chars
-  output_gtk2_appointments($dialog->vbox, @apps);
+  # Gtk2: output_gtk_appointments($dialog->vbox, @apps);
+  output_gtk_appointments($dialog->get_content_area(), @apps);
 
   # Connect signals and show Widget
-  $dialog->signal_connect (response => \&gtk2_response);
+  $dialog->signal_connect (response => \&gtk_response);
   $dialog->show_all;
-  Gtk2->main;
-  $dialog->hide_all;
-  print "DEBUG: Gtk2 Event loop exited, continuing program execution\n" if $options{'Debug'};
+  Gtk3->main;
+  $dialog->hide;
+  print "DEBUG: Gtk Event loop exited, continuing program execution\n" if $options{'Debug'};
 }
 
 
-# format appointments and put into vbox for Gtk2-Widget as markup text label
+# format appointments and put into vbox for Gtk-Widget as markup text label
 # 1.P: vbox object
 # 2.P: Array reference to Appointments
-sub output_gtk2_appointments($\@) {
+sub output_gtk_appointments($\@) {
 
   # Get Parameters
   my $dialog_vbox = shift;
@@ -802,10 +805,10 @@ sub output_gtk2_appointments($\@) {
 
   if ( @{$aref} > 0 ) {           # We have to put some entries
     # Need to center entries; put them into another vbox (for later alignment)
-    my $vbox = Gtk2::VBox->new(TRUE, 0);   # homogenious, no extra spacing
+    my $vbox = Gtk3::VBox->new(TRUE, 0);   # homogenious, no extra spacing
 
     foreach my $txt (@{$aref}) {
-      $_ = Gtk2::Label->new();
+      $_ = Gtk3::Label->new();
       $_ -> set_markup($txt);
       # format the label
       $_ -> set_alignment(0, 0);      # Align left, top
@@ -814,7 +817,7 @@ sub output_gtk2_appointments($\@) {
     }
 
     # Align in the middle, do not take up more space then required
-    my $align = Gtk2::Alignment->new(0.5, 0, 0, 1); # xalign, yalign, xscale, yscale
+    my $align = Gtk3::Alignment->new(0.5, 0, 0, 1); # xalign, yalign, xscale, yscale
     $align->set_padding(0, 0, 10, 10);  # Pad 10px left and right
     $align->add($vbox);                 # And now add our vbox
 
@@ -822,14 +825,14 @@ sub output_gtk2_appointments($\@) {
     $dialog_vbox->add($align);  # put in box
 
     # Add separator when required (i.e. when we put entries at all)
-    $_ = Gtk2::HSeparator->new();
+    $_ = Gtk3::HSeparator->new();
     $dialog_vbox->add($_);  # put in box
   }
 
 }
 
 
-# escape markup characters before applying pango markup in gtk2 label
+# Escape markup characters before applying pango markup in Gtk label
 # 1.P: Reference to Text which should be escaped
 sub markup_escape(\$) {
   # *** Variables
@@ -851,9 +854,9 @@ sub markup_escape(\$) {
 
 }
 
-# Attach cstermin icon to the handed over gtk2 window
+# Attach cstermin icon to the handed over Gtk window
 # 1.P: window object
-sub attach_gtk2_icon ($) {
+sub attach_gtk_icon ($) {
   # Only try to load icon when file exists
   if (! -f $Icon_File) {
     print "DEBUG: Icon File \"$Icon_File\" not found\n" if $options{'Debug'};
@@ -866,34 +869,35 @@ sub attach_gtk2_icon ($) {
 
 
 # displays the collected error messages in this run
-sub error_gtk2() {
+sub error_gtk() {
 
   # do we have something to display?
   return unless $error_messages;
 
   # Init Gkt2 (double should do no harm)
-  Gtk2->init;
+  Gtk3->init;
 
   # *** Build Widget
   # using the Simplest: GtkMessageDialog.html
-  my $dialog = Gtk2::MessageDialog->new(undef,
+  my $dialog = Gtk3::MessageDialog->new(undef,
   					'destroy-with-parent',
   					'error',
   					'ok',
   					$error_messages
   				       );
 
-  $dialog->signal_connect (response => \&gtk2_response);
-  attach_gtk2_icon($dialog);  # Try to load Window's icon
+  $dialog->set_title('Appointment Days');
+  $dialog->signal_connect (response => \&gtk_response);
+  attach_gtk_icon($dialog);  # Try to load Window's icon
   $dialog->show_all;
-  Gtk2->main;
-  $dialog->hide_all;
+  Gtk3->main;
+  $dialog->hide;
 }
 
 
 
 # Callback for all Dialogs
-sub gtk2_response {
+sub gtk_response {
   my ( $widget, $response ) = @_;
 
   if ($response eq 100) {
@@ -903,6 +907,6 @@ sub gtk2_response {
 
   }
 
-  Gtk2->main_quit;  # quit in any way
+  Gtk3->main_quit;  # quit in any way
   1;
 }

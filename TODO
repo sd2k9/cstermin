@@ -5,9 +5,9 @@ Misc:
 - keep order of Lines in the ConfigFile while writeback
 - allow configuration of date format in display and config file
 
-Gtk2-Widget:
-- think about how to let Gtk2 parse its standard arguments from the
-  command line without loading the whole Gtk2 always (even when
+Gtk
+- think about how to let Gtk parse its standard arguments from the
+  command line without loading the whole Gtk always (even when
   we don't want to use it)
 
 config file:

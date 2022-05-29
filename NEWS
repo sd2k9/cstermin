@@ -1,8 +1,9 @@
 			   cstermin History
 			   ================
 
-Version devel
-   - Under development in Git
+Version devel (Under development in Git)
+   - Convert to Gtk3
+   - Rename option Output-Gtk2 to Output-Gtk
 
 Version 0.03
    - Console Output is done now in UTF-8

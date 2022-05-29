@@ -17,8 +17,8 @@
 # Print appointments in the console window
 # Options: Output-Console Yes
 #
-# Display appointments in a Gtk2 graphical window
-# Options: Output-Gtk2 No
+# Display appointments in a Gtk graphical window
+# Options: Output-Gtk No
 #
 # Run every program execution, not only once a day
 # Options: Force-Run No
